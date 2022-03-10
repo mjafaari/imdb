@@ -128,3 +128,27 @@ class MakeComment(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class MakeLike(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, format=False):
+        serializer = LikeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetGenres(APIView):
+    permission_classes = []
+    def get(self, request, format=False):
+        genres = Genre.objects.all()
+        serializer = GenreSerializer(genres, many=True)
+        return Response (serializer.data)
+
+
+class GetDirectors(APIView):
+    permission_classes = []
+    def get(self, request, format=False):
+        directors = Director.objects.all()
+        serializer = DirectorSerializer(directors, many=True).data
+        return Response (serializer.data)
