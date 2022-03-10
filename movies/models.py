@@ -13,6 +13,7 @@ class Director(models.Model):
     def __str__(self):
         return self.name
 
+
 class Movie(models.Model):
     name = models.CharField(max_length=200, unique=True, primary_key=True)
     director = models.ManyToManyField(Director)
@@ -21,3 +22,14 @@ class Movie(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class Comment(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, primary_key=True)
+    title = models.CharField(max_length=200)
+    body = models.TextField(null=True, blank=True)
+    reply = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+
+
