@@ -93,3 +93,38 @@ class GetTitleMovies(APIView):
         movies = self.get_movies(pk)
         serializer = MovieSerializer(movies, many=True)
         return Response(serializer.data)
+
+
+class GetMovieComments(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get_comments(self, pk):
+        movie = Movie.objects.get(name=pk)
+        comments = Comment.objects.filter(movie=movie)
+        try:
+            return comments
+        except Movie.DoesNotExist:
+            raise Http404
+    def get(self, request, pk, format=None):
+        comments = self.get_comments(pk)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+class GetComment(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, requeset, pk, format=None):
+        comment = Comment.objects.get(id=pk)
+        serializer = CommentSerializer(comment, many=False)
+        return Response(serializer.data)
+
+
+class MakeComment(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
