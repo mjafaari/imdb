@@ -47,3 +47,49 @@ class MovieHandler(APIView):
         movie = self._get_movie(pk)
         movie.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class GetGenreMovies(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get_movies(self, pk):
+        genre = Genre.objects.get(name=pk)
+        movies = Movie.objects.filter(genre=genre)
+        try:
+            return movies
+        except Genre.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        movies = self.get_movies(pk)
+        serializer = MovieSerializer(movies, many=True)
+        return Response(serializer.data)
+
+class GetDirectorMovies(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get_movies(self, pk):
+        director = Director.objects.get(name=pk)
+        movies = Movie.objects.filter(director=director)
+        try:
+            return movies
+        except Genre.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        movies = self.get_movies(pk)
+        serializer = MovieSerializer(movies, many=True)
+        return Response(serializer.data)
+
+
+class GetTitleMovies(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get_movies(self, pk):
+        movies = Movie.objects.filter(name__contains=pk)
+        try:
+            return movies
+        except Movie.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        movies = self.get_movies(pk)
+        serializer = MovieSerializer(movies, many=True)
+        return Response(serializer.data)
