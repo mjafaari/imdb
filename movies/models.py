@@ -1,4 +1,6 @@
 from django.db import models
+import uuid
+from users.models import User
 
 class Genre(models.Model):
     name= models.CharField(max_length=80, unique=True)
@@ -33,3 +35,7 @@ class Comment(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
 
 
+class Like(models.Model):
+    vote = models.BooleanField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
